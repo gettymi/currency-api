@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,10 @@ SECRET_KEY = 'django-insecure-)9jkp&5rhgkm2ekp86!ywj*o)=@238gj5^%_l2f&1+5c74g3yc
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+#variables from env
+OXR_APP_ID = config('OXR_APP_ID')
+OXR_BASE_URL = config('OXR_BASE_URL')
 
 
 # Application definition
