@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.http import JsonResponse
 import requests
+from django.core.cache import cache
 
 OXR_APP_ID = settings.OXR_APP_ID 
 OXR_APP_URL = settings.OXR_APP_URL
@@ -69,8 +70,16 @@ def latest(request):
         "app_id":OXR_APP_ID,
     }
 
+    cache_key = f"latest_{symbols if symbols else "all"}"
+    data = cache.get(cache_key)
+
+    if data:
+        return JsonResponse(data)
+        
+
     if symbols:
         params["symbols"] = symbols
+
 
     try:
         r = requests.get(url, params)
@@ -80,6 +89,8 @@ def latest(request):
         return JsonResponse({'error': 'API is unreachable'}, status=502)
     except ValueError:
         return JsonResponse({'error': 'API did not return valid JSON'}, status=502)
+
+    cache.set(cache_key,data,timeout=60)
 
     return JsonResponse(
         data 
