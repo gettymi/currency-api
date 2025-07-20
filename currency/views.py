@@ -3,6 +3,9 @@ from django.conf import settings
 from django.http import JsonResponse
 import requests
 
+OXR_APP_ID = settings.OXR_APP_ID 
+OXR_APP_URL = settings.OXR_APP_URL
+
 # Create your views here.
 
 def convert(request):
@@ -10,8 +13,6 @@ def convert(request):
     from_parameter = request.GET.get('from')
     to_parameter = request.GET.get('to')
         
-    OXR_APP_ID = settings.OXR_APP_ID 
-    OXR_APP_URL = settings.OXR_APP_URL
 
     url = f"{OXR_APP_URL}/latest.json"
 
@@ -38,3 +39,50 @@ def convert(request):
         'converted':round(converted,2),
         'rate':round(rates[to_parameter] / rates[from_parameter],6)
     })
+
+
+def currencies(request):
+    
+    url = f"{OXR_APP_URL}/currencies.json"
+    params = {
+        "app_id": OXR_APP_ID
+    }
+
+    try:
+        r = requests.get(url, params)
+        r.raise_for_status() 
+        data = r.json()
+    except requests.RequestException:
+        return JsonResponse({'error': 'API is unreachable'}, status=502)
+    except ValueError:
+        return JsonResponse({'error': 'API did not return valid JSON'}, status=502)
+
+    return JsonResponse(data)
+
+
+def latest(request):
+
+    symbols = request.GET.get('symbols')
+
+    url = f"{OXR_APP_URL}/latest.json"
+    params = {
+        "app_id":OXR_APP_ID,
+    }
+
+    if symbols:
+        params["symbols"] = symbols
+
+    try:
+        r = requests.get(url, params)
+        r.raise_for_status() 
+        data = r.json()
+    except requests.RequestException:
+        return JsonResponse({'error': 'API is unreachable'}, status=502)
+    except ValueError:
+        return JsonResponse({'error': 'API did not return valid JSON'}, status=502)
+
+    return JsonResponse(
+        data 
+    )
+
+    
