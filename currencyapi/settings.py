@@ -137,3 +137,36 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+LOGGING = {
+    "version":1,
+    "disable_existing_loggers":False,
+    "formatters":{
+        "verbose":{
+            "format": "[{asctime}] {levelname} {name}: {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+
+    "handlers":{
+        "file":{
+            "class":"logging.FileHandler",
+            "filename": "general.log",
+            "formatter": "verbose",
+            "level": "DEBUG",
+        },
+        "console":{
+            "class":"logging.StreamHandler",
+            "formatter": "verbose",
+            "level":"INFO",
+        },
+    },
+
+    "root":
+        {
+            "handlers":["file","console"],
+            "level":"DEBUG",
+        },
+    
+}
